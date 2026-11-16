@@ -20,12 +20,12 @@ AI-powered voice appointment booking system built with n8n, ElevenLabs, Twilio, 
 ### Call Recording Demo
 Shows a complete customer call and appointment booking process.
 
-File: call-demo.mp4
+File: call-demo.mp4 - https://drive.google.com/file/d/1PBMyY9bY-JG03hAuGlzRmMhYG1Vjw-0Z/view?usp=sharing  
 
 ### ElevenLabs + Twilio Setup
 Shows how ElevenLabs is connected with Twilio and n8n.
 
-File: elevenlabs-twilio-setup.mp4
+File: elevenlabs-twilio-setup.mp4 - https://drive.google.com/file/d/1zRHjmU_PySbMZodZ8nWY6Mk8r5WM-fy_/view?usp=sharing
 
 ## Tech Stack
 
