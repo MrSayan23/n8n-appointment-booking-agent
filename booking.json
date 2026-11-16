@@ -1,0 +1,197 @@
+{
+  "name": "booking",
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://sudeshnas.info/codezsols_infotech/ci_dev/user_files/msit/backend/api/calling_agent/create.php",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"name\": \"{{ $('Webhook from ElevenLabs (Book)1').item.json.body.name }}\",\n  \"phone\": \"{{ $('Webhook from ElevenLabs (Book)1').item.json.body.phone }}\",\n  \"date\": \"{{ $('Webhook from ElevenLabs (Book)1').item.json.body.date }}\",\n  \"time\": \"{{ $('Webhook from ElevenLabs (Book)1').item.json.body.time }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1424,
+        208
+      ],
+      "id": "17316c09-21e7-4a63-ab2f-c5d0456623d6",
+      "name": "Save to Database"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "confirm-booking-webhook",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        816,
+        208
+      ],
+      "id": "38e11ad4-b1c0-4ee7-841e-c61b8e8db538",
+      "name": "Webhook from ElevenLabs (Book)1",
+      "webhookId": "c977b83c-4a36-4718-839a-ec1665753843"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"startTime\": \"{{ $json.body.date }}T{{ $json.body.time }}:00+05:30\",\n  \"endTime\": \"{{ DateTime.fromISO($json.body.date + 'T' + $json.body.time + ':00+05:30').plus({minutes: 30}).toISO() }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1024,
+        208
+      ],
+      "id": "f7546ed9-453c-4b40-afc5-1d115af9ffe0",
+      "name": "Calculate Time1"
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "biswajitdebnath02023@gmail.com",
+          "mode": "list",
+          "cachedResultName": "biswajitdebnath02023@gmail.com"
+        },
+        "start": "={{ $json.startTime }}",
+        "end": "={{ $json.endTime }}",
+        "additionalFields": {
+          "description": "=Phone: {{ $('Webhook from ElevenLabs (Book)1').item.json.body.phone }}",
+          "summary": "=Booking: {{ $('Webhook from ElevenLabs (Book)1').item.json.body.name }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        1216,
+        208
+      ],
+      "id": "9c221079-954c-41e0-bc14-f4280f8f00bb",
+      "name": "Create Event in Calendar1",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "nI8oskIqMlH3ew91",
+          "name": "biswajitdebnath_calendar"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\n  \"status\": \"success\",\n  \"message\": \"The appointment has been successfully added to the calendar. Thank the customer and end the call.\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1632,
+        208
+      ],
+      "id": "fc7aeb52-db34-4a5a-a4cf-2ca0cf16979e",
+      "name": "Respond Success1"
+    },
+    {
+      "parameters": {
+        "formTitle": "booking",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "date",
+              "fieldType": "date"
+            },
+            {
+              "fieldLabel": "time"
+            },
+            {
+              "fieldLabel": "name"
+            },
+            {
+              "fieldLabel": "phone"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        640,
+        -32
+      ],
+      "id": "ca900707-d585-4649-8434-19ea237b5967",
+      "name": "On form submission",
+      "webhookId": "dffc61a5-3d2e-4334-91e2-34146bf99af2",
+      "disabled": true
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Save to Database": {
+      "main": [
+        [
+          {
+            "node": "Respond Success1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook from ElevenLabs (Book)1": {
+      "main": [
+        [
+          {
+            "node": "Calculate Time1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate Time1": {
+      "main": [
+        [
+          {
+            "node": "Create Event in Calendar1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Event in Calendar1": {
+      "main": [
+        [
+          {
+            "node": "Save to Database",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "19051aec-62ec-4eff-93b8-8c0c7e21db52",
+  "meta": {
+    "instanceId": "1a070f62fd570f9b448428174e26a566e2f1c714d4e4fbaf2aaf4bac52e484ca"
+  },
+  "id": "EG2uueYKXnaEa0Rj",
+  "tags": []
+}
